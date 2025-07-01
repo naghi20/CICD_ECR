@@ -1,0 +1,18 @@
+Parameters:
+  ECRRepoUri:
+    Type: String
+
+Resources:
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: "cicd-ecr-task"
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: "app"
+          Image: !Sub "${ECRRepoUri}:latest"
+          PortMappings:
+            - ContainerPort: 80
