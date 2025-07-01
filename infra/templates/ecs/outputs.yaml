@@ -7,13 +7,13 @@ Outputs:
 
   ECRRepoUri:
     Description: ECR repository URI
-    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepo}"
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/cicd-ecr-repo"
     Export:
       Name: !Sub "${AWS::StackName}-ECRRepoUri"
 
   ServiceName:
     Description: ECS service name
-    Value: !GetAtt ECSService.Name
+    Value: !GetAtt Service.Name
     Export:
       Name: !Sub "${AWS::StackName}-ServiceName"
 
