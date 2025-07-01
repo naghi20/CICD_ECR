@@ -1,22 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
-  GitHubRepo:
+  ECRRepoUri:
     Type: String
 
 Resources:
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [codebuild.amazonaws.com]
+            Action: ['sts:AssumeRole']
+      Policies:
+        - PolicyName: ECRPushAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:*
+                  - logs:*
+                Resource: "*"
+
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: "cicd-ecr-build"
+      Name: cicd-ecr-build
+      ServiceRole: !GetAtt CodeBuildRole.Arn
       Source:
         Type: GITHUB
-        Location: !Ref GitHubRepo
-        BuildSpec: "buildspec.yml"
+        Location: "naghi20/CICD_ECR"
+        GitCloneDepth: 1
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/standard:5.0"
+        Image: aws/codebuild/standard:5.0
+        PrivilegedMode: true
         EnvironmentVariables:
           - Name: AWS_ACCOUNT_ID
             Value: "225989367454"
           - Name: AWS_REGION
             Value: "eu-west-2"
+          - Name: ECR_REPO_URI
+            Value: !Ref ECRRepoUri
+      Artifacts:
+        Type: NO_ARTIFACTS
+
+Outputs: !Include ./outputs.yaml
