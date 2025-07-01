@@ -1,12 +1,6 @@
 Outputs:
   PipelineName:
     Description: CodePipeline name
-    Value: !Ref CodePipeline
+    Value: !Ref Pipeline
     Export:
       Name: !Sub "${AWS::StackName}-PipelineName"
-
-  CodeBuildProjectName:
-    Description: CodeBuild project name
-    Value: !Ref CodeBuildProject
-    Export:
-      Name: !Sub "${AWS::StackName}-CodeBuildProjectName"
