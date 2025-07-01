@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Root stack for ECS CI/CD
+
+Resources:
+  NetworkStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: "https://cicd-ecr-artifacts.s3.eu-west-2.amazonaws.com/infra/templates/vpc/vpc.yaml"
+
+  ECSStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: NetworkStack
+    Properties:
+      TemplateURL: "https://cicd-ecr-artifacts.s3.eu-west-2.amazonaws.com/infra/templates/ecs/cluster.yaml"
+      Parameters:
+        VpcId: !ImportValue NetworkStack-VpcId
+        Subnets: !ImportValue NetworkStack-PublicSubnets
+        SecurityGroupId: !ImportValue NetworkStack-SecurityGroupId
+
+  PipelineStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: ECSStack
+    Properties:
+      TemplateURL: "https://cicd-ecr-artifacts.s3.eu-west-2.amazonaws.com/infra/templates/pipeline/codepipeline.yaml"
+      Parameters:
+        ClusterName: !ImportValue ECSStack-ClusterName
+        ServiceName: !ImportValue ECSStack-ServiceName
+        ECRRepoUri: !ImportValue ECSStack-ECRRepoUri
+
+Outputs:
+  ServiceURL:
+    Description: Application endpoint
+    Value: !ImportValue ECSStack-LoadBalancerDNS
+
+  PipelineConsoleURL:
+    Description: CodePipeline console URL
+    Value: !Sub "https://eu-west-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/${PipelineStack-PipelineName}/view"
