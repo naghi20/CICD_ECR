@@ -1,0 +1,13 @@
+Resources:
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: "CICD-ECR-Cluster"
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
+
+  ECRRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: "cicd-ecr-repo"
