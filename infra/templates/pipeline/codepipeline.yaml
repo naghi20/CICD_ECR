@@ -1,0 +1,34 @@
+Parameters:
+  ECSClusterName:
+    Type: String
+  ECSServiceName:
+    Type: String
+
+Resources:
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: "CICD-ECR-Pipeline"
+      Stages:
+        - Name: "Source"
+          Actions:
+            - Name: "GitHub-Source"
+              ActionTypeId:
+                Category: "Source"
+                Owner: "ThirdParty"
+                Provider: "GitHub"
+              Configuration:
+                Owner: "naghi20"
+                Repo: "CICD_ECR"
+                Branch: "main"
+        - Name: "Deploy"
+          Actions:
+            - Name: "ECS-Deploy"
+              ActionTypeId:
+                Category: "Deploy"
+                Owner: "AWS"
+                Provider: "ECS"
+              Configuration:
+                ClusterName: !Ref ECSClusterName
+                ServiceName: !Ref ECSServiceName
+                FileName: "imagedefinitions.json"
