@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Automated ECS Fargate Pipeline
+
+Resources:
+  NetworkStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://cicd-ecr-artifacts.s3.eu-west-2.amazonaws.com/infra/templates/1-vpc.yaml
+  
+  ECSStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: NetworkStack
+    Properties:
+      TemplateURL: https://cicd-ecr-artifacts.s3.eu-west-2.amazonaws.com/infra/templates/2-ecs.yaml
+      Parameters:
+        VpcId: !GetAtt NetworkStack.Outputs.VpcId
+        Subnets: !GetAtt NetworkStack.Outputs.PublicSubnets
+
+  PipelineStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: ECSStack
+    Properties:
+      TemplateURL: https://cicd-ecr-artifacts.s3.eu-west-2.amazonaws.com/infra/templates/3-pipeline.yaml
+      Parameters:
+        GitHubRepo: "naghi20/CICD_ECR"
+        ECRRepoName: !GetAtt ECSStack.Outputs.ECRRepoName
+
+Outputs:
+  ServiceURL:
+    Value: !GetAtt ECSStack.Outputs.LoadBalancerDNS
+  PipelineURL:
+    Value: !Sub "https://eu-west-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/CICD-ECR-Pipeline/view"
