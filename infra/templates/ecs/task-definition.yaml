@@ -9,10 +9,24 @@ Resources:
       Family: "cicd-ecr-task"
       NetworkMode: awsvpc
       RequiresCompatibilities: [FARGATE]
-      Cpu: "256"
-      Memory: "512"
+      Cpu: 256
+      Memory: 512
+      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
       ContainerDefinitions:
         - Name: "app"
           Image: !Sub "${ECRRepoUri}:latest"
+          Essential: true
           PortMappings:
             - ContainerPort: 80
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: "/ecs/cicd-ecr-app"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: "ecs"
+
+Outputs:
+  TaskDefinitionArn:
+    Value: !Ref TaskDefinition
+    Export:
+      Name: !Sub "${AWS::StackName}-TaskDefinitionArn"
