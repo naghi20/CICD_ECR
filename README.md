@@ -5,6 +5,7 @@ Containerized Application Deployment on ECS
 •	Push the container image to Amazon ECR
 •	Deploy the image using Amazon ECS with Fargate
 •	Automate build and deployment using CodePipeline
+
 Used Services:
 •	Docker, Amazon ECR, Amazon ECS (Fargate)
 •	AWS CodePipeline, IAM, CloudWatch Logs
