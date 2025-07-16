@@ -81,4 +81,9 @@ Resources:
               InputArtifacts:
                 - Name: BuildOutput
 
-Outputs: !Include ./outputs.yaml
+Outputs:
+  PipelineName:
+    Description: CodePipeline name
+    Value: !Ref Pipeline
+    Export:
+      Name: !Sub "${AWS::StackName}-PipelineName"
