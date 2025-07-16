@@ -1,4 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Description: ECS Cluster, ECR Repository, Task Execution Role, and ALB
+
 Parameters:
   VpcId:
     Type: String
@@ -101,4 +103,27 @@ Resources:
           ContainerPort: 80
           TargetGroupArn: !Ref TargetGroup
 
-Outputs: !Include ./outputs.yaml
+Outputs:
+  ClusterName:
+    Description: ECS cluster name
+    Value: !Ref ECSCluster
+    Export:
+      Name: !Sub "${AWS::StackName}-ClusterName"
+
+  ECRRepoUri:
+    Description: ECR repository URI
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/cicd-ecr-repo"
+    Export:
+      Name: !Sub "${AWS::StackName}-ECRRepoUri"
+
+  ServiceName:
+    Description: ECS service name
+    Value: !GetAtt Service.Name
+    Export:
+      Name: !Sub "${AWS::StackName}-ServiceName"
+
+  LoadBalancerDNS:
+    Description: Application load balancer DNS
+    Value: !GetAtt LoadBalancer.DNSName
+    Export:
+      Name: !Sub "${AWS::StackName}-LoadBalancerDNS"
