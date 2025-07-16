@@ -49,4 +49,9 @@ Resources:
       Artifacts:
         Type: NO_ARTIFACTS
 
-Outputs: !Include ./outputs.yaml
+Outputs:
+  CodeBuildProjectName:
+    Description: CodeBuild project name
+    Value: !Ref CodeBuildProject
+    Export:
+      Name: !Sub "${AWS::StackName}-CodeBuildProjectName"
