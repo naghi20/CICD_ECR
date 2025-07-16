@@ -1,8 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ECS Task Definition for app using ECR image
+
 Parameters:
   ECRRepoUri:
     Type: String
 
 Resources:
+  TaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [ecs-tasks.amazonaws.com]
+            Action: ['sts:AssumeRole']
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
