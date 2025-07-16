@@ -45,6 +45,46 @@ Resources:
 
   Service:
     Type: AWS::ECS::Service
+    DependsOn: Listener
+    Properties:
+      ServiceName: "cicd-ecr-service"
+      Cluster: !Ref ClusterName
+      LaunchType: FARGATE
+      TaskDefinition: !Ref TaskDefinitionArn
+      DesiredCount: 1
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: !Ref Subnets
+          SecurityGroups: [!Ref SecurityGroupId]
+      LoadBalancers:
+        - ContainerName: "app"
+          ContainerPort: 80
+          TargetGroupArn: !Ref TargetGroup
+
+Outputs:
+  ServiceName:
+    Value: !GetAtt Service.Name
+    Export:
+      Name: !Sub "${AWS::StackName}-ServiceName"
+
+  LoadBalancerDNS:
+    Value: !GetAtt LoadBalancer.DNSName
+    Export:
+      Name: !Sub "${AWS::StackName}-LoadBalancerDNS"
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn: [LoadBalancer, TargetGroup]
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  Service:
+    Type: AWS::ECS::Service
     DependsOn: [Listener, TaskDefinition]
     Properties:
       ServiceName: "cicd-ecr-service"
