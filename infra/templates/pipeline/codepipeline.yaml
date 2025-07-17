@@ -66,6 +66,20 @@ Resources:
                 - Name: SourceOutput
               OutputArtifacts:
                 - Name: BuildOutput
+        - Name: Test
+          Actions:
+          - Name: Test
+            ActionTypeId:
+              Category: Test
+              Owner: AWS
+              Provider: CodeBuild
+              Version: 1
+            InputArtifacts:
+              - Name: BuildArtifact
+            Configuration:
+              ProjectName: !Ref TestCodeBuildProject
+            RunOrder: 1
+           
         - Name: Deploy
           Actions:
             - Name: ECS-Deploy
