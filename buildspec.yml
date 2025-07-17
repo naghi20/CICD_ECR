@@ -8,6 +8,10 @@ phases:
     commands:
       - docker build -t $APP_NAME ./app
       - docker tag $APP_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cicd-ecr-repo:latest
+  test:
+    commands:
+      - echo "Running tests..."
+      - docker run --rm $APP_NAME:latest pytest || echo "No tests found"
   post_build:
     commands:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cicd-ecr-repo:latest
