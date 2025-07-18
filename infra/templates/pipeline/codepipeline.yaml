@@ -4,7 +4,6 @@ Parameters:
     Type: String
   ServiceName:
     Type: String
-
 Resources:
   PipelineRole:
     Type: AWS::IAM::Role
@@ -27,7 +26,6 @@ Resources:
                   - ecr:*
                   - ecs:*
                 Resource: "*"
-
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -65,21 +63,20 @@ Resources:
               InputArtifacts:
                 - Name: SourceOutput
               OutputArtifacts:
-                - Name: BuildOutput
+                - Name: BuildArtifact
         - Name: Test
           Actions:
-          - Name: Test
-            ActionTypeId:
-              Category: Test
-              Owner: AWS
-              Provider: CodeBuild
-              Version: 1
-            InputArtifacts:
-              - Name: BuildArtifact
-            Configuration:
-              ProjectName: !Ref TestCodeBuildProject
-            RunOrder: 1
-           
+            - Name: Test
+              ActionTypeId:
+                Category: Test
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts:
+                - Name: BuildArtifact
+              Configuration:
+                ProjectName: !Ref TestCodeBuildProject
+              RunOrder: 1
         - Name: Deploy
           Actions:
             - Name: ECS-Deploy
@@ -93,11 +90,4 @@ Resources:
                 ServiceName: !Ref ServiceName
                 FileName: imagedefinitions.json
               InputArtifacts:
-                - Name: BuildOutput
-
-Outputs:
-  PipelineName:
-    Description: CodePipeline name
-    Value: !Ref Pipeline
-    Export:
-      Name: !Sub "${AWS::StackName}-PipelineName"
+                - Name: BuildArtifact
