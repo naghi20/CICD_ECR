@@ -71,6 +71,7 @@ aws cloudformation deploy \
   --region $REGION \
   --stack-name $TASKDEF_STACK \
   --template-file infra/templates/ecs/taskdef.yaml \
+  --capabilities CAPABILITY_IAM
   --parameter-overrides \
       ECRImageUri=$(aws cloudformation describe-stacks --region $REGION --stack-name $ECR_STACK --query "Stacks[0].Outputs[?OutputKey=='ECRRepoUri'].OutputValue" --output text):latest
 
