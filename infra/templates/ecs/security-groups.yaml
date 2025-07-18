@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Security Groups for ECS Tasks
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+Resources:
+  ECSTaskSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ECS Task Security Group
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !ImportValue CICD-ECR-ALBSG
+
+Outputs:
+  ECSTaskSGId:
+    Value: !Ref ECSTaskSecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-ECSTaskSG"
