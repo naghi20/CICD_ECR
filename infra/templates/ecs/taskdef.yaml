@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: ECS Task Definition for app using ECR image
+Description: ECS Task Definition
 
 Parameters:
-  ECRRepoUri:
+  ECRImageUri:
     Type: String
 
 Resources:
@@ -14,35 +14,34 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: [ecs-tasks.amazonaws.com]
-            Action: ['sts:AssumeRole']
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
 
-  TaskDefinition:
+  AppTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: "cicd-ecr-task"
+      Family: app-task
       NetworkMode: awsvpc
       RequiresCompatibilities: [FARGATE]
-      Cpu: 256
-      Memory: 512
+      Cpu: '256'
+      Memory: '512'
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
       ContainerDefinitions:
-        - Name: "app"
-          Image: !Sub "${ECRRepoUri}:latest"
-          Essential: true
+        - Name: app
+          Image: !Ref ECRImageUri
           PortMappings:
             - ContainerPort: 80
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: "/ecs/cicd-ecr-app"
-              awslogs-region: !Ref AWS::Region
-              awslogs-stream-prefix: "ecs"
+              awslogs-group: /ecs/app
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-stream-prefix: app
 
 Outputs:
   TaskDefinitionArn:
-    Value: !Ref TaskDefinition
+    Value: !Ref AppTaskDefinition
     Export:
-      Name: !Sub "${AWS::StackName}-TaskDefinitionArn"
+      Name: !Sub "${AWS::StackName}-TaskDefArn"
