@@ -1,4 +1,5 @@
 version: 0.2
+
 phases:
   pre_build:
     commands:
@@ -6,18 +7,32 @@ phases:
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
   build:
     commands:
+      - echo "Building Docker image..."
       - docker build -t $APP_NAME ./app
       - docker tag $APP_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cicd-ecr-repo:latest
   test:
     commands:
       - echo "Running tests..."
-      - docker run --rm $APP_NAME:latest pytest || echo "No tests found"
+      - |
+        docker run --rm $APP_NAME:latest pytest
+        TEST_EXIT_CODE=$?
+        if [ $TEST_EXIT_CODE -eq 5 ]; then
+          echo "ERROR: No tests were collected by pytest."
+          exit 1
+        elif [ $TEST_EXIT_CODE -ne 0 ]; then
+          echo "ERROR: Some tests failed."
+          exit $TEST_EXIT_CODE
+        fi
   post_build:
     commands:
+      - echo "Pushing Docker image to ECR..."
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cicd-ecr-repo:latest
+      - echo "Writing imagedefinitions.json..."
       - printf '[{"name":"app","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cicd-ecr-repo:latest > imagedefinitions.json
+
 artifacts:
   files: imagedefinitions.json
+
 env:
   variables:
     APP_NAME: "cicd-ecr-app"
