@@ -15,7 +15,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          SourceSecurityGroupId: !ImportValue CICD-ECR-ALBSG
+          SourceSecurityGroupId: !ImportValue CICD-ECR-SG
 
 Outputs:
   ECSTaskSGId:
