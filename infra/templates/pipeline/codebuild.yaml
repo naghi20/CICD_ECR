@@ -1,10 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
-  ECRRepoUri:
+  ClusterName:
     Type: String
-
+  ServiceName:
+    Type: String
 Resources:
-  CodeBuildRole:
+  PipelineRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -12,46 +13,81 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: [codebuild.amazonaws.com]
+              Service: [codepipeline.amazonaws.com]
             Action: ['sts:AssumeRole']
       Policies:
-        - PolicyName: ECRPushAccess
+        - PolicyName: PipelineAccess
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
+                  - codebuild:*
                   - ecr:*
-                  - logs:*
+                  - ecs:*
                 Resource: "*"
-
-  CodeBuildProject:
-    Type: AWS::CodeBuild::Project
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
     Properties:
-      Name: cicd-ecr-build
-      ServiceRole: !GetAtt CodeBuildRole.Arn
-      Source:
-        Type: GITHUB
-        Location: "naghi20/CICD_ECR"
-        GitCloneDepth: 1
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:5.0
-        PrivilegedMode: true
-        EnvironmentVariables:
-          - Name: AWS_ACCOUNT_ID
-            Value: "225989367454"
-          - Name: AWS_REGION
-            Value: "eu-west-2"
-          - Name: ECR_REPO_URI
-            Value: !Ref ECRRepoUri
-      Artifacts:
-        Type: NO_ARTIFACTS
-
-Outputs:
-  CodeBuildProjectName:
-    Description: CodeBuild project name
-    Value: !Ref CodeBuildProject
-    Export:
-      Name: !Sub "${AWS::StackName}-CodeBuildProjectName"
+      Name: cicd-ecr-pipeline
+      RoleArn: !GetAtt PipelineRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: cicd-ecr-artifacts
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: GitHub-Source
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: 1
+              Configuration:
+                Owner: naghi20
+                Repo: CICD_ECR
+                Branch: main
+                OAuthToken: "{{resolve:secretsmanager:github-token}}"
+              OutputArtifacts:
+                - Name: SourceOutput
+        - Name: Build
+          Actions:
+            - Name: CodeBuild
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              Configuration:
+                ProjectName: cicd-ecr-build
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: BuildArtifact
+        - Name: Test
+          Actions:
+            - Name: Test
+              ActionTypeId:
+                Category: Test
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts:
+                - Name: BuildArtifact
+              Configuration:
+                ProjectName: !Ref TestCodeBuildProject
+              RunOrder: 1
+        - Name: Deploy
+          Actions:
+            - Name: ECS-Deploy
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: ECS
+                Version: 1
+              Configuration:
+                ClusterName: !Ref ClusterName
+                ServiceName: !Ref ServiceName
+                FileName: imagedefinitions.json
+              InputArtifacts:
+                - Name: BuildArtifact
