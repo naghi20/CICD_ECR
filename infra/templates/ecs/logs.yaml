@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudWatch Log Group for ECS
+
+Resources:
+  AppLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /ecs/app
+      RetentionInDays: 7
+
+Outputs:
+  LogGroupName:
+    Value: !Ref AppLogGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-LogGroup"
