@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ECR Repository
+
+Resources:
+  AppECRRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: cicd-ecr-repo
+
+Outputs:
+  ECRRepoUri:
+    Value: !GetAtt AppECRRepo.RepositoryUri
+    Export:
+      Name: !Sub "${AWS::StackName}-ECRRepoUri"
