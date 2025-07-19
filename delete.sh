@@ -4,16 +4,16 @@
 # Or edit STACKS array below with your stack names
 
 STACKS=(
-  "my-ecs-service-stack"
-  "my-ecs-taskdef-stack"
-  "my-ecs-cluster-stack"
-  "my-alb-stack"
-  "my-ecr-stack"
-  "my-logs-stack"
-  "my-security-groups-stack"
-  "my-vpc-stack"
-  "my-codebuild-stack"
-  "my-codepipeline-stack"
+  "cicd-ecr-service"
+  "cicd-ecr-taskdef"
+  "cicd-ecr-cluster"
+  "cicd-ecr-alb"
+  "cicd-ecr-ecr"
+  "cicd-ecr-logs"
+  "cicd-ecr-sg"
+  "cicd-vpc"
+  "cicd-codebuild"
+  "cicd-codepipeline"
 )
 
 

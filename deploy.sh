@@ -32,6 +32,9 @@ aws cloudformation deploy \
   --stack-name $ECR_STACK \
   --template-file infra/templates/ecs/ecr.yaml
 
+#----PUSH IMAGE----
+. app/push.sh
+
 # ---- DEPLOY LOGS ----
 echo "Deploying CloudWatch Logs stack..."
 aws cloudformation deploy \

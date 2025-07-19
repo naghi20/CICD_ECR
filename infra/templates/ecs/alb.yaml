@@ -4,10 +4,8 @@ Description: Application Load Balancer
 Parameters:
   VpcId:
     Type: AWS::EC2::VPC::Id
-    Description: VPC ID for the ALB
   SubnetIds:
     Type: List<AWS::EC2::Subnet::Id>
-    Description: List of public subnet IDs for the ALB
 
 Resources:
   ALBSecurityGroup:
@@ -29,21 +27,20 @@ Resources:
       SecurityGroups: [!Ref ALBSecurityGroup]
       Scheme: internet-facing
       Type: application
-      Tags:
-        - Key: Name
-          Value: app-alb
 
   ALBTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: !Sub "app-tg-${AWS::StackName}"
+      Name: app-tg
       Port: 80
       Protocol: HTTP
       VpcId: !Ref VpcId
       TargetType: ip
       HealthCheckPath: /
-      Matcher:
-        HttpCode: 200
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
 
   ALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -57,17 +54,14 @@ Resources:
 
 Outputs:
   ALBDNSName:
-    Description: DNS name of the Application Load Balancer
     Value: !GetAtt ApplicationLoadBalancer.DNSName
     Export:
       Name: !Sub "${AWS::StackName}-ALBDNS"
   TargetGroupArn:
-    Description: ARN of the Target Group
     Value: !Ref ALBTargetGroup
     Export:
       Name: !Sub "${AWS::StackName}-TargetGroupArn"
   ALBSecurityGroupId:
-    Description: Security Group ID for the ALB
     Value: !Ref ALBSecurityGroup
     Export:
       Name: !Sub "${AWS::StackName}-ALBSG"
