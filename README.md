@@ -1,5 +1,4 @@
 # Fork this repostry then open this file in edit mode fo rbetter visual 
-------------PROJECT NAME------------------------------------
 # CICD_ECR: Automated CI/CD Pipeline for AWS ECS/Fargate
 
 This project provides a **modular, production-ready CI/CD pipeline** for containerized applications on AWS, using **ECS (Fargate)**, **ECR**, **CodePipeline**, and **CloudFormation**.  
