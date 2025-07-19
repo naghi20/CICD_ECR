@@ -21,6 +21,7 @@ Resources:
       TaskDefinition: !Ref TaskDefinitionArn
       LaunchType: FARGATE
       DesiredCount: 1
+      HealthCheckGracePeriodSeconds: 60
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -30,7 +31,7 @@ Resources:
         - TargetGroupArn: !Ref TargetGroupArn
           ContainerName: app
           ContainerPort: 80
-
+  
 Outputs:
   ServiceName:
     Value: !Ref AppService
