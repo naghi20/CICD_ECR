@@ -1,4 +1,3 @@
-# Fork this repostry then open this file in edit mode fo rbetter visual 
 # CICD_ECR: Automated CI/CD Pipeline for AWS ECS/Fargate
 
 This project provides a **modular, production-ready CI/CD pipeline** for containerized applications on AWS, using **ECS (Fargate)**, **ECR**, **CodePipeline**, and **CloudFormation**.  
@@ -18,27 +17,49 @@ It includes all infrastructure as code (IaC) templates, application code, Docker
 
 ## 🗂️ Repository Structure
 CICD_ECR/
+
 ├── app/                       # Application source code & tests
+
 │   ├── app.py
+
 │   └── test_app.py
+
 ├── buildspec.yml              # CodeBuild build/test/push spec
+
 ├── requirements.txt           # Python dependencies (Flask, pytest, etc.)
+
 ├── dockerfile                 # Dockerfile for the app
+
 └── infra/
+
     └── templates/
+    
         ├── vpc/               # VPC, subnets, security groups
+        
         │   └── vpc.yaml
+        
         ├── ecs/               # ECS cluster, service, taskdef, ECR, logs, ALB
+        
         │   ├── cluster.yaml
+        
         │   ├── service.yaml
+        
         │   ├── taskdef.yaml
+
         │   ├── ecr.yaml
+        
         │   ├── alb.yaml
+        
         │   ├── security-groups.yaml
+        
         │   └── logs.yaml
+        
         └── pipeline/
+        
             ├── codepipeline.yaml
+            
             └── codebuild.yaml
+            
           
 ---
 
