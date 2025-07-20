@@ -4,14 +4,19 @@ Description: ECS Service
 Parameters:
   ClusterName:
     Type: String
+    Description: Name of the ECS Cluster (import from ECS Cluster stack)
   TaskDefinitionArn:
     Type: String
+    Description: ARN of the ECS Task Definition (import from TaskDef stack)
   SubnetIds:
     Type: List<AWS::EC2::Subnet::Id>
+    Description: List of public subnet IDs (import from VPC stack)
   SecurityGroupId:
     Type: AWS::EC2::SecurityGroup::Id
+    Description: Security Group ID for ECS tasks (import from SG or VPC stack)
   TargetGroupArn:
     Type: String
+    Description: Target Group ARN for ALB (import from ALB stack)
 
 Resources:
   AppService:
@@ -28,12 +33,18 @@ Resources:
           SecurityGroups: [!Ref SecurityGroupId]
       LoadBalancers:
         - TargetGroupArn: !Ref TargetGroupArn
-          ContainerName: app
+          ContainerName: app   # Must match the container name in your Task Definition
           ContainerPort: 80
       HealthCheckGracePeriodSeconds: 60
-  
+
 Outputs:
   ServiceName:
+    Description: Name of the ECS Service
     Value: !Ref AppService
     Export:
       Name: !Sub "${AWS::StackName}-ServiceName"
+  ServiceArn:
+    Description: ARN of the ECS Service
+    Value: !GetAtt AppService.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-ServiceArn"
