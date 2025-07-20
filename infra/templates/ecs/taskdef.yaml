@@ -35,10 +35,10 @@ Resources:
             - ContainerPort: 80
           HealthCheck:
             Command: ["CMD-SHELL", "curl -f http://localhost:80/ || exit 1"]
-            IntervalSeconds: 30
-            TimeoutSeconds: 25
+            Interval: 30
+            Timeout: 25
             Retries: 3
-            StartPeriodSeconds: 10
+            StartPeriod: 10
           LogConfiguration:
             LogDriver: awslogs
             Options:
