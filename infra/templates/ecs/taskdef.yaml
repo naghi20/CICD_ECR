@@ -33,12 +33,7 @@ Resources:
           Image: !Ref ECRImageUri
           PortMappings:
             - ContainerPort: 80
-          HealthCheck:
-            Command: ["CMD-SHELL", "curl -f http://localhost:80/ || exit 1"]
-            Interval: 30
-            Timeout: 25
-            Retries: 3
-            StartPeriod: 10
+          HealthCheck: NONE 
           LogConfiguration:
             LogDriver: awslogs
             Options:
