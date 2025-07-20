@@ -30,6 +30,7 @@ CICD_ECR/
 
 ├── dockerfile                 # Dockerfile for the app
 
+
 └── infra/
 
     └── templates/
