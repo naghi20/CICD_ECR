@@ -7,7 +7,7 @@ app = Flask(__name__)
 def home():
     return "Automated CICD_ECR Deployment Working!"
 
-@app.route('/health')
+@app.route('/')
 def health():
     return "OK", 200
 
