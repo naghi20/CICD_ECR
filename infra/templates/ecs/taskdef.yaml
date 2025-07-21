@@ -25,8 +25,8 @@ Resources:
       Family: app-task
       NetworkMode: awsvpc
       RequiresCompatibilities: [FARGATE]
-      Cpu: '256'
-      Memory: '512'
+      Cpu: '1024'
+      Memory: '2048'
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
       ContainerDefinitions:
         - Name: app
