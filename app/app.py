@@ -1,13 +1,12 @@
 # app/app.py
-
 from flask import Flask
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Automated CICD_ECR Deployment Working!"
+    return "Automated CICD_ECR Deployment Working!", 200
 
-@app.route('/')
+@app.route('/health')
 def health():
     return "OK", 200
 
